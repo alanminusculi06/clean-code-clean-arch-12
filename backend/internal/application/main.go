@@ -3,6 +3,7 @@ package main
 import (
 	"backend/internal/application/dto"
 	"backend/internal/pkg/domain"
+	"backend/internal/pkg/domain/ride"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -23,7 +24,7 @@ func calculateRidePrice(context *gin.Context) {
 		return
 	}
 
-	ride := domain.Ride{}
+	ride := ride.Ride{}
 	for i, segment := range rideDTO.Segments {
 		layout := "2006-01-02T15:04:05"
 		date, err := time.Parse(layout, segment.Date)

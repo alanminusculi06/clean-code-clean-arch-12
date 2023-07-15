@@ -1,4 +1,4 @@
-package domain
+package cpf
 
 import (
 	"backend/internal/pkg/shared"

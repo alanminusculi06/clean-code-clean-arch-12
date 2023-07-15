@@ -1,4 +1,4 @@
-package domain
+package cpf
 
 type Cpf struct {
 	Number string

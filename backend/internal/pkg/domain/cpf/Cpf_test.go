@@ -1,6 +1,8 @@
-package domain
+package cpf
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestCpf_IsValid(t *testing.T) {
 	type fields struct {

@@ -1,6 +1,8 @@
-package domain
+package ride
 
 import (
+	"backend/internal/pkg/domain"
+	"backend/internal/pkg/domain/segment"
 	"reflect"
 	"testing"
 	"time"
@@ -8,28 +10,28 @@ import (
 
 func TestRide_CalculatePrice(t *testing.T) {
 	type fields struct {
-		Segments []Segment
+		Segments []segment.Segment
 	}
 	tests := []struct {
 		name   string
 		fields fields
 		want   float64
-		want1  *ApiError
+		want1  *domain.ApiError
 	}{
 		{
 			name: "Given a segment with negative distance when calculate ride price then return error",
 			fields: fields{
-				Segments: []Segment{
+				Segments: []segment.Segment{
 					{Distance: -10, Date: time.Date(2023, 7, 15, 14, 30, 00, 000, time.Local)},
 				},
 			},
 			want:  0.0,
-			want1: NewUnprocessableEntityError("error_negative_distance", "Distance cannot be negative", ""),
+			want1: domain.NewUnprocessableEntityError("error_negative_distance", "Distance cannot be negative", ""),
 		},
 		{
 			name: "Given an over night not sunday segment when calculate ride price then return price",
 			fields: fields{
-				Segments: []Segment{
+				Segments: []segment.Segment{
 					{Distance: 10, Date: time.Date(2023, 7, 15, 22, 30, 00, 000, time.Local)},
 				},
 			},
@@ -39,7 +41,7 @@ func TestRide_CalculatePrice(t *testing.T) {
 		{
 			name: "Given an over night sunday segment when calculate ride price then return price",
 			fields: fields{
-				Segments: []Segment{
+				Segments: []segment.Segment{
 					{Distance: 10, Date: time.Date(2023, 7, 16, 22, 30, 00, 000, time.Local)},
 				},
 			},
@@ -49,7 +51,7 @@ func TestRide_CalculatePrice(t *testing.T) {
 		{
 			name: "Given a not over night sunday segment when calculate ride price then return price",
 			fields: fields{
-				Segments: []Segment{
+				Segments: []segment.Segment{
 					{Distance: 10, Date: time.Date(2023, 7, 16, 14, 30, 00, 000, time.Local)},
 				},
 			},
@@ -59,7 +61,7 @@ func TestRide_CalculatePrice(t *testing.T) {
 		{
 			name: "Given a not over night not sunday segment when calculate ride price then return price",
 			fields: fields{
-				Segments: []Segment{
+				Segments: []segment.Segment{
 					{Distance: 10, Date: time.Date(2023, 7, 15, 14, 30, 00, 000, time.Local)},
 				},
 			},
@@ -69,7 +71,7 @@ func TestRide_CalculatePrice(t *testing.T) {
 		{
 			name: "Given a less than min price segment when calculate ride price then return min price",
 			fields: fields{
-				Segments: []Segment{
+				Segments: []segment.Segment{
 					{Distance: 1, Date: time.Date(2023, 7, 15, 14, 30, 00, 000, time.Local)},
 				},
 			},
