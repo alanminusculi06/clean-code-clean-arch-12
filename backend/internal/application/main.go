@@ -3,24 +3,64 @@ package main
 import (
 	"backend/internal/application/dto"
 	"backend/internal/pkg/domain"
+	"backend/internal/pkg/domain/cpf"
 	"backend/internal/pkg/domain/ride"
+	"backend/internal/pkg/domain/user"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"net/http"
 	"time"
 )
 
 func main() {
 	router := gin.Default()
-	router.POST("/ride/calculate-price", calculateRidePrice)
+	router.POST("/rides/calculate-price", calculateRidePrice)
+	router.POST("/drivers", createDriver)
+	router.POST("/passengers", createPassenger)
 	_ = router.Run("localhost:8080")
+}
+
+func createPassenger(context *gin.Context) {
+	var passengerDTO dto.PassengerDTO
+	if apiErr := bindJson(context, &passengerDTO); apiErr != nil {
+		context.IndentedJSON(apiErr.Status, apiErr)
+		return
+	}
+
+	passenger := user.NewPassenger(uuid.New().String(), passengerDTO.Name, passengerDTO.Email, cpf.NewCpf(passengerDTO.Cpf))
+	if apiErr := validateCpf(passenger); apiErr != nil {
+		context.IndentedJSON(apiErr.Status, apiErr)
+		return
+	}
+
+	passengerDTO.ID = passenger.ID
+
+	context.IndentedJSON(http.StatusCreated, passengerDTO)
+}
+
+func createDriver(context *gin.Context) {
+	var driverDTO dto.DriverDTO
+	if apiErr := bindJson(context, &driverDTO); apiErr != nil {
+		context.IndentedJSON(apiErr.Status, apiErr)
+		return
+	}
+
+	driver := user.NewDriver(uuid.New().String(), driverDTO.Name, cpf.NewCpf(driverDTO.Cpf), driverDTO.CarPlate)
+	if apiErr := validateCpf(driver); apiErr != nil {
+		context.IndentedJSON(apiErr.Status, apiErr)
+		return
+	}
+
+	driverDTO.ID = driver.ID
+
+	context.IndentedJSON(http.StatusCreated, driverDTO)
 }
 
 func calculateRidePrice(context *gin.Context) {
 	var rideDTO dto.RideDTO
-	if err := context.BindJSON(&rideDTO); err != nil {
-		apiErr := domain.NewBindJsonError(err.Error())
-		context.IndentedJSON(http.StatusBadRequest, apiErr)
+	if apiErr := bindJson(context, &rideDTO); apiErr != nil {
+		context.IndentedJSON(apiErr.Status, apiErr)
 		return
 	}
 
@@ -44,4 +84,18 @@ func calculateRidePrice(context *gin.Context) {
 	}
 
 	context.IndentedJSON(http.StatusOK, dto.CalculateRidePriceResultDTO{Price: price})
+}
+
+func bindJson(context *gin.Context, obj interface{}) *domain.ApiError {
+	if err := context.BindJSON(obj); err != nil {
+		return domain.NewBindJsonError(err.Error())
+	}
+	return nil
+}
+
+func validateCpf(user user.IUser) *domain.ApiError {
+	if cpfIsValid := user.GetCpf().IsValid(); !cpfIsValid {
+		return domain.NewUnprocessableEntityError("invalid_cpf", "Given CPF is not valid.", "")
+	}
+	return nil
 }

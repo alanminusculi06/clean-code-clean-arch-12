@@ -53,7 +53,7 @@ func Test_CalculateRidePrice(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			response, err := http.Post("http://localhost:8080/ride/calculate-price", "application/json", strings.NewReader(tt.fields.input))
+			response, err := http.Post("http://localhost:8080/rides/calculate-price", "application/json", strings.NewReader(tt.fields.input))
 			if err != nil {
 				t.Errorf(err.Error())
 			}
