@@ -13,10 +13,13 @@ func (ride *Ride) AddSegment(distance float64, date time.Time) {
 	ride.Segments = append(ride.Segments, NewSegment(distance, date))
 }
 
-func (ride *Ride) CalculatePrice() float64 {
+func (ride *Ride) CalculatePrice() (float64, *ApiError) {
 	price := 0.0
 
 	for _, segment := range ride.Segments {
+		if segment.Distance < 0 {
+			return 0.0, NewUnprocessableEntityError("error_negative_distance", "Distance cannot be negative", "")
+		}
 		if segment.IsOvernight() && !segment.IsSunday() {
 			price += segment.Distance * shared.OvernightFare
 		}
@@ -32,8 +35,8 @@ func (ride *Ride) CalculatePrice() float64 {
 	}
 
 	if price < shared.MinPrice {
-		return shared.MinPrice
+		return shared.MinPrice, nil
 	}
 
-	return price
+	return price, nil
 }

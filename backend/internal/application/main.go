@@ -12,7 +12,7 @@ import (
 func main() {
 	router := gin.Default()
 	router.POST("/ride/calculate-price", calculateRidePrice)
-	router.Run("localhost:8080")
+	_ = router.Run("localhost:8080")
 }
 
 func calculateRidePrice(context *gin.Context) {
@@ -25,10 +25,10 @@ func calculateRidePrice(context *gin.Context) {
 
 	ride := domain.Ride{}
 	for i, segment := range rideDTO.Segments {
-		layout := "2006-01-02T15:04:05.000Z"
+		layout := "2006-01-02T15:04:05"
 		date, err := time.Parse(layout, segment.Date)
 		if err != nil {
-			apiErr := domain.NewApiError("error_parse_date", fmt.Sprintf("Segment #%v: invalid date", i), err.Error())
+			apiErr := domain.NewUnprocessableEntityError("error_parse_date", fmt.Sprintf("Segment #%v: invalid date", i), err.Error())
 			context.IndentedJSON(http.StatusBadRequest, apiErr)
 			return
 		}
@@ -36,6 +36,11 @@ func calculateRidePrice(context *gin.Context) {
 		ride.AddSegment(segment.Distance, date)
 	}
 
-	price := ride.CalculatePrice()
-	context.IndentedJSON(http.StatusOK, price)
+	price, apiErr := ride.CalculatePrice()
+	if apiErr != nil {
+		context.IndentedJSON(apiErr.Status, apiErr)
+		return
+	}
+
+	context.IndentedJSON(http.StatusOK, dto.CalculateRidePriceResultDTO{Price: price})
 }
