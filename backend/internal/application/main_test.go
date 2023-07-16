@@ -1,7 +1,9 @@
 package main
 
 import (
-	"backend/internal/application/dto"
+	"backend/internal/application/useCases/drivers"
+	"backend/internal/application/useCases/passengers"
+	"backend/internal/application/useCases/rides"
 	"backend/internal/pkg/domain"
 	"encoding/json"
 	"io"
@@ -18,30 +20,26 @@ func Test_CalculateRidePrice(t *testing.T) {
 	tests := []struct {
 		name               string
 		fields             fields
-		expectedResult     *dto.CalculateRidePriceResultDTO
+		expectedResult     *rides.Output
 		expectedApiError   *domain.ApiError
 		expectedStatusCode int
 	}{
 		{
 			name: "Given a valid segment when calculate ride price then return price",
 			fields: fields{
-				input: `{
-					"segments": [
+				input: `[
 						{ "distance": 10, "date": "2021-03-01T10:00:00" }
-					]
-				}`,
+					]`,
 			},
-			expectedResult:     &dto.CalculateRidePriceResultDTO{Price: 21.0},
+			expectedResult:     &rides.Output{Price: 21.0},
 			expectedStatusCode: http.StatusOK,
 		},
 		{
 			name: "Given an invalid segment distance when calculate ride price then return price",
 			fields: fields{
-				input: `{
-					"segments": [
+				input: `[
 						{ "distance": -10, "date": "2021-03-01T10:00:00" }
-					]
-				}`,
+					]`,
 			},
 			expectedResult:     nil,
 			expectedApiError:   domain.NewUnprocessableEntityError("error_negative_distance", "Distance cannot be negative", ""),
@@ -60,7 +58,7 @@ func Test_CalculateRidePrice(t *testing.T) {
 			}()
 
 			if tt.expectedResult != nil {
-				apiResult := &dto.CalculateRidePriceResultDTO{}
+				apiResult := &rides.Output{}
 				body, _ := io.ReadAll(response.Body)
 				_ = json.Unmarshal(body, apiResult)
 
@@ -132,7 +130,7 @@ func Test_CreateDriver(t *testing.T) {
 			}()
 
 			if tt.expectedApiError == nil {
-				apiResult := &dto.DriverDTO{}
+				apiResult := &drivers.Output{}
 				body, _ := io.ReadAll(response.Body)
 				_ = json.Unmarshal(body, apiResult)
 
@@ -202,7 +200,7 @@ func Test_CreatePassenger(t *testing.T) {
 			}()
 
 			if tt.expectedApiError == nil {
-				apiResult := &dto.DriverDTO{}
+				apiResult := &passengers.Output{}
 				body, _ := io.ReadAll(response.Body)
 				_ = json.Unmarshal(body, apiResult)
 
