@@ -16,3 +16,11 @@ func NewBindJsonError(cause string) *ApiError {
 func NewUnprocessableEntityError(error string, message string, cause string) *ApiError {
 	return &ApiError{Error: error, Message: message, Cause: cause, Status: http.StatusUnprocessableEntity}
 }
+
+func NewInternalServerError(error string, message string, cause string) *ApiError {
+	return &ApiError{Error: error, Message: message, Cause: cause, Status: http.StatusInternalServerError}
+}
+
+func NewNotFoundError(error string, message string, cause string) *ApiError {
+	return &ApiError{Error: error, Message: message, Cause: cause, Status: http.StatusNotFound}
+}

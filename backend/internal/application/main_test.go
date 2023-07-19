@@ -1,8 +1,8 @@
 package main
 
 import (
-	"backend/internal/application/useCases/drivers"
-	"backend/internal/application/useCases/passengers"
+	createDriver2 "backend/internal/application/useCases/drivers/createDriver"
+	createPassenger2 "backend/internal/application/useCases/passengers/createPassenger"
 	"backend/internal/application/useCases/rides"
 	"backend/internal/pkg/domain"
 	"encoding/json"
@@ -130,7 +130,7 @@ func Test_CreateDriver(t *testing.T) {
 			}()
 
 			if tt.expectedApiError == nil {
-				apiResult := &drivers.Output{}
+				apiResult := &createDriver2.Output{}
 				body, _ := io.ReadAll(response.Body)
 				_ = json.Unmarshal(body, apiResult)
 
@@ -200,7 +200,7 @@ func Test_CreatePassenger(t *testing.T) {
 			}()
 
 			if tt.expectedApiError == nil {
-				apiResult := &passengers.Output{}
+				apiResult := &createPassenger2.Output{}
 				body, _ := io.ReadAll(response.Body)
 				_ = json.Unmarshal(body, apiResult)
 

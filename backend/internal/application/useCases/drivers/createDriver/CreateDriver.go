@@ -1,6 +1,7 @@
-package drivers
+package createDriver
 
 import (
+	"backend/internal/application/repository"
 	"backend/internal/pkg/domain"
 	"backend/internal/pkg/domain/cpf"
 	"backend/internal/pkg/domain/user"
@@ -8,10 +9,11 @@ import (
 )
 
 type CreateDriver struct {
+	driverDatabase repository.DriverRepository
 }
 
-func NewCreateDriverUseCase() CreateDriver {
-	return CreateDriver{}
+func NewCreateDriverUseCase(driverDatabase repository.DriverRepository) CreateDriver {
+	return CreateDriver{driverDatabase: driverDatabase}
 }
 
 func (useCase CreateDriver) Execute(input Input) (*Output, *domain.ApiError) {
@@ -20,14 +22,17 @@ func (useCase CreateDriver) Execute(input Input) (*Output, *domain.ApiError) {
 		return nil, domain.NewUnprocessableEntityError("invalid_cpf", "Given CPF is not valid.", "")
 	}
 
-	//todo insert
+	insertedDriver, apiErr := useCase.driverDatabase.Save(driver)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 
 	return &Output{
-		ID:       driver.ID,
-		Name:     driver.Name,
-		Email:    driver.Email,
-		Cpf:      driver.Cpf.Number,
-		CarPlate: driver.CarPlate,
+		ID:       insertedDriver.ID,
+		Name:     insertedDriver.Name,
+		Email:    insertedDriver.Email,
+		Cpf:      insertedDriver.Cpf.Number,
+		CarPlate: insertedDriver.CarPlate,
 	}, nil
 }
 

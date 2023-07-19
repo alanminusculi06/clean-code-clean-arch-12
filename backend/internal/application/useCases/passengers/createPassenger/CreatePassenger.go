@@ -1,6 +1,7 @@
-package passengers
+package createPassenger
 
 import (
+	"backend/internal/application/repository"
 	"backend/internal/pkg/domain"
 	"backend/internal/pkg/domain/cpf"
 	"backend/internal/pkg/domain/user"
@@ -8,10 +9,11 @@ import (
 )
 
 type CreatePassenger struct {
+	passengerDatabase repository.PassengerRepository
 }
 
-func NewCreatePassengerUseCase() CreatePassenger {
-	return CreatePassenger{}
+func NewCreatePassengerUseCase(passengerDatabase repository.PassengerRepository) CreatePassenger {
+	return CreatePassenger{passengerDatabase: passengerDatabase}
 }
 
 func (useCase CreatePassenger) Execute(input Input) (*Output, *domain.ApiError) {
@@ -20,13 +22,16 @@ func (useCase CreatePassenger) Execute(input Input) (*Output, *domain.ApiError) 
 		return nil, domain.NewUnprocessableEntityError("invalid_cpf", "Given CPF is not valid.", "")
 	}
 
-	//todo insert
+	insertedPassenger, apiErr := useCase.passengerDatabase.Save(passenger)
+	if apiErr != nil {
+		return nil, apiErr
+	}
 
 	return &Output{
-		ID:    passenger.ID,
-		Name:  passenger.Name,
-		Email: passenger.Email,
-		Cpf:   passenger.Cpf.Number,
+		ID:    insertedPassenger.ID,
+		Name:  insertedPassenger.Name,
+		Email: insertedPassenger.Email,
+		Cpf:   insertedPassenger.Cpf.Number,
 	}, nil
 }
 
