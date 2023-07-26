@@ -133,11 +133,9 @@ func TestCreateDriver_Execute(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			useCase := CreateDriver{
-				driverDatabase: tt.fields.driverDatabase,
-			}
+			useCase := NewCreateDriverUseCase(tt.fields.driverDatabase)
 			driver, err := useCase.Execute(tt.args.input)
-			if driver != nil && !reflect.DeepEqual(driver, tt.expectedDriver) {
+			if !reflect.DeepEqual(driver, tt.expectedDriver) {
 				t.Errorf("Execute() driver = %v, want %v", err, tt.expectedDriver)
 			}
 			if !reflect.DeepEqual(err, tt.expectedError) {
