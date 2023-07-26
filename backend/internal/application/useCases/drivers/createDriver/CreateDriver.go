@@ -4,6 +4,7 @@ import (
 	"backend/internal/application/repository"
 	"backend/internal/pkg/domain"
 	"backend/internal/pkg/domain/cpf"
+	"backend/internal/pkg/domain/email"
 	"backend/internal/pkg/domain/user"
 	"github.com/google/uuid"
 )
@@ -17,9 +18,14 @@ func NewCreateDriverUseCase(driverDatabase repository.DriverRepository) CreateDr
 }
 
 func (useCase CreateDriver) Execute(input Input) (*Output, *domain.ApiError) {
-	driver := user.NewDriver(uuid.New().String(), input.Name, input.Email, cpf.NewCpf(input.Cpf), input.CarPlate)
+	driver := user.NewDriver(uuid.New().String(), input.Name, email.NewEmail(input.Email), cpf.NewCpf(input.Cpf), input.CarPlate)
+
 	if cpfIsValid := driver.GetCpf().IsValid(); !cpfIsValid {
 		return nil, domain.NewUnprocessableEntityError("invalid_cpf", "Given CPF is not valid.", "")
+	}
+
+	if emailIsValid := driver.GetEmail().IsValid(); !emailIsValid {
+		return nil, domain.NewUnprocessableEntityError("invalid_email", "Given e-mail is not valid.", "")
 	}
 
 	insertedDriver, apiErr := useCase.driverDatabase.Save(driver)
@@ -30,7 +36,7 @@ func (useCase CreateDriver) Execute(input Input) (*Output, *domain.ApiError) {
 	return &Output{
 		ID:       insertedDriver.ID,
 		Name:     insertedDriver.Name,
-		Email:    insertedDriver.Email,
+		Email:    insertedDriver.Email.Address,
 		Cpf:      insertedDriver.Cpf.Number,
 		CarPlate: insertedDriver.CarPlate,
 	}, nil

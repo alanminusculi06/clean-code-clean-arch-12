@@ -26,7 +26,7 @@ func (passengerDatabase PassengerDatabase) Save(passenger user.Passenger) (*user
 func (passengerDatabase PassengerDatabase) Get(passengerID string) (*user.Passenger, *domain.ApiError) {
 	var passenger user.Passenger
 	row := passengerDatabase.db.QueryRow("SELECT * FROM passenger WHERE id = ?", passengerID)
-	if err := row.Scan(&passenger.ID, &passenger.Name, &passenger.Email, &passenger.Cpf.Number); err != nil {
+	if err := row.Scan(&passenger.ID, &passenger.Name, &passenger.Email.Address, &passenger.Cpf.Number); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, domain.NewNotFoundError("error_get_passenger", fmt.Sprintf("Not found passenger with ID %s", passengerID), err.Error())
 		}

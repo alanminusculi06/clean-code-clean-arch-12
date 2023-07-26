@@ -22,7 +22,7 @@ func (useCase GetDriver) Execute(input Input) (*Output, *domain.ApiError) {
 	return &Output{
 		ID:       driver.ID,
 		Name:     driver.Name,
-		Email:    driver.Email,
+		Email:    driver.Email.Address,
 		Cpf:      driver.Cpf.Number,
 		CarPlate: driver.CarPlate,
 	}, nil

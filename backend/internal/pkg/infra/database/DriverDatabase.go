@@ -26,7 +26,7 @@ func (driverDatabase DriverDatabase) Save(driver user.Driver) (*user.Driver, *do
 func (driverDatabase DriverDatabase) Get(driverID string) (*user.Driver, *domain.ApiError) {
 	var driver user.Driver
 	row := driverDatabase.db.QueryRow("SELECT * FROM driver WHERE id = ?", driverID)
-	if err := row.Scan(&driver.ID, &driver.Name, &driver.Email, &driver.CarPlate, &driver.Cpf.Number); err != nil {
+	if err := row.Scan(&driver.ID, &driver.Name, &driver.Email.Address, &driver.CarPlate, &driver.Cpf.Number); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, domain.NewNotFoundError("error_get_driver", fmt.Sprintf("Not found driver with ID %s", driverID), err.Error())
 		}

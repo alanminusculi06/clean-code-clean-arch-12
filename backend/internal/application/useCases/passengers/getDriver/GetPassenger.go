@@ -22,7 +22,7 @@ func (useCase GetPassenger) Execute(input Input) (*Output, *domain.ApiError) {
 	return &Output{
 		ID:    passenger.ID,
 		Name:  passenger.Name,
-		Email: passenger.Email,
+		Email: passenger.Email.Address,
 		Cpf:   passenger.Cpf.Number,
 	}, nil
 }
