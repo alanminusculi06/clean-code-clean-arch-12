@@ -105,7 +105,7 @@ func Test_CreateDriver(t *testing.T) {
 			expectedStatusCode: http.StatusCreated,
 		},
 		{
-			name: "Given an invalid input when create driver then return api error",
+			name: "Given an invalid cpf when create driver then return api error",
 			fields: fields{
 				input: `{
 					"name": "Alan",
@@ -115,6 +115,19 @@ func Test_CreateDriver(t *testing.T) {
 				}`,
 			},
 			expectedApiError:   domain.NewUnprocessableEntityError("invalid_cpf", "Given CPF is not valid.", ""),
+			expectedStatusCode: http.StatusUnprocessableEntity,
+		},
+		{
+			name: "Given an invalid email when create driver then return api error",
+			fields: fields{
+				input: `{
+					"name": "Alan",
+					"email": "alanemail.com.br",
+					"cpf": "871.756.595-20",
+					"car-plate": "MKJ-6775"
+				}`,
+			},
+			expectedApiError:   domain.NewUnprocessableEntityError("invalid_email", "Given e-mail is not valid.", ""),
 			expectedStatusCode: http.StatusUnprocessableEntity,
 		},
 	}
@@ -176,7 +189,7 @@ func Test_CreatePassenger(t *testing.T) {
 			expectedStatusCode: http.StatusCreated,
 		},
 		{
-			name: "Given an invalid input when create driver then return api error",
+			name: "Given an cpf input when create driver then return api error",
 			fields: fields{
 				input: `{
 					"name": "Alan",
@@ -185,6 +198,18 @@ func Test_CreatePassenger(t *testing.T) {
 				}`,
 			},
 			expectedApiError:   domain.NewUnprocessableEntityError("invalid_cpf", "Given CPF is not valid.", ""),
+			expectedStatusCode: http.StatusUnprocessableEntity,
+		},
+		{
+			name: "Given an cpf email when create driver then return api error",
+			fields: fields{
+				input: `{
+					"name": "Alan",
+					"email": "alanemail.com.br",
+					"cpf": "871.756.595-20"
+				}`,
+			},
+			expectedApiError:   domain.NewUnprocessableEntityError("invalid_email", "Given e-mail is not valid.", ""),
 			expectedStatusCode: http.StatusUnprocessableEntity,
 		},
 	}
