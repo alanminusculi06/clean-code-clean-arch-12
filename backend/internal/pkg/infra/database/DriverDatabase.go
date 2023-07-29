@@ -16,7 +16,7 @@ func NewDriverDatabase(db *sql.DB) DriverDatabase {
 }
 
 func (driverDatabase DriverDatabase) Save(driver user.Driver) (*user.Driver, *domain.ApiError) {
-	_, err := driverDatabase.db.Exec("INSERT INTO driver(`id`,`name`,`email`,`car_plate`,`cpf`) VALUES (?,?,?,?,?);", driver.ID, driver.Name, driver.Email, driver.CarPlate, driver.Cpf.Number)
+	_, err := driverDatabase.db.Exec("INSERT INTO driver(`id`,`name`,`email`,`car_plate`,`cpf`) VALUES (?,?,?,?,?);", driver.ID, driver.Name, driver.Email.Address, driver.CarPlate, driver.Cpf.Number)
 	if err != nil {
 		return nil, domain.NewInternalServerError("error_save_driver", "Unexpected error while saving driver", err.Error())
 	}

@@ -16,7 +16,7 @@ func NewPassengerDatabase(db *sql.DB) PassengerDatabase {
 }
 
 func (passengerDatabase PassengerDatabase) Save(passenger user.Passenger) (*user.Passenger, *domain.ApiError) {
-	_, err := passengerDatabase.db.Exec("INSERT INTO passenger (`id`,`name`,`email`,`cpf`) VALUES (?,?,?,?);", passenger.ID, passenger.Name, passenger.Email, passenger.Cpf.Number)
+	_, err := passengerDatabase.db.Exec("INSERT INTO passenger (`id`,`name`,`email`,`cpf`) VALUES (?,?,?,?);", passenger.ID, passenger.Name, passenger.Email.Address, passenger.Cpf.Number)
 	if err != nil {
 		return nil, domain.NewInternalServerError("error_save_passenger", "Unexpected error while saving passenger", err.Error())
 	}

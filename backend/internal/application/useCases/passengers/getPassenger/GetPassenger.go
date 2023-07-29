@@ -1,4 +1,4 @@
-package getDriver
+package getPassenger
 
 import (
 	"backend/internal/application/repository"
