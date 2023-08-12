@@ -9,6 +9,7 @@ import (
 	"backend/internal/application/useCases/rides"
 	"backend/internal/pkg/infra/database"
 	"backend/internal/pkg/infra/http"
+	repository2 "backend/internal/pkg/infra/repository"
 	"database/sql"
 )
 
@@ -20,8 +21,8 @@ func main() {
 	sqlDatabase := database.NewDataBase()
 	db = sqlDatabase.Config()
 
-	passengerDatabase = database.NewPassengerDatabase(db)
-	driverDatabase = database.NewDriverDatabase(db)
+	passengerDatabase = repository2.NewPassengerDatabase(db)
+	driverDatabase = repository2.NewDriverDatabase(db)
 
 	createDriver := createDriver2.NewCreateDriverUseCase(driverDatabase)
 	createPassenger := createPassenger2.NewCreatePassengerUseCase(passengerDatabase)
