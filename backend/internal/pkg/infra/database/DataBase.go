@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/go-sql-driver/mysql"
 	"log"
 )
@@ -32,8 +31,6 @@ func (database DataBase) Config() *sql.DB {
 	if pingErr != nil {
 		log.Fatal(pingErr)
 	}
-
-	fmt.Println("DB Connected!")
 
 	return db
 }
